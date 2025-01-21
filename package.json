@@ -1,0 +1,20 @@
+{
+  "name": "paper-golf",
+  "version": "1.0.0",
+  "description": "A fun and interactive paper golf game.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "golf",
+    "game",
+    "paper"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    // Add your project dependencies here
+  }
+}
