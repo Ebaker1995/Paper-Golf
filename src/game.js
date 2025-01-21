@@ -97,26 +97,87 @@ function placeHole() {
     const holeDot = document.querySelector(`.dotgrid[data-row="${holePosition.row}"][data-col="${holePosition.col}"]`);
     holeDot.appendChild(hole);
 }
+//Not working properly
+// function moveBall(steps) {
+//     const currentDot = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"] .ball`);
+//     if (currentDot) {
+//         currentDot.remove();
+//     }
 
-function moveBall(steps) {
-    const currentDot = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"] .ball`);
-    if (currentDot) {
-        currentDot.remove();
-    }
+//     // Example movement logic: move right by steps
+//     ballPosition.col = (ballPosition.col + steps) % cols;
 
-    // Example movement logic: move right by steps
-    ballPosition.col = (ballPosition.col + steps) % cols;
-
-    placeBall();
-}
+//     placeBall();
+// }
 
 function rollDice() {
+    
     const dice = document.getElementById('dice');
     const result = Math.floor(Math.random() * 6) + 1;
     dice.dataset.side = result;
     dice.classList.toggle('reRoll');
-    document.getElementById('diceResult').textContent = `You rolled a ${result}`;
-    moveBall(result);
+    
+    // moveBall(result);
+    highlightGridPositions(result);
+    console.log(result);
+    
+}
+function highlightGridPositions(steps) {
+    // Clear previous highlights
+    document.querySelectorAll('.highlight').forEach(cell => cell.remove());
+
+    // Check if the ball is in the fairway
+    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
+    const isInFairway = ballCell.classList.contains('fairway');
+    console.log(`Ball is in fairway: ${isInFairway}`);
+
+    // Highlight new positions in a straight line
+    const directions = [
+        { row: 0, col: steps },  // Right
+        { row: 0, col: -steps }, // Left
+        { row: steps, col: 0 },  // Down
+        { row: -steps, col: 0 }  // Up
+    ];
+
+    directions.forEach(direction => {
+        let newRow = ballPosition.row + direction.row;
+        let newCol = ballPosition.col + direction.col;
+
+        if (isInFairway) {
+            newRow += Math.sign(direction.row);
+            newCol += Math.sign(direction.col);
+        }
+
+        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+            const dotDiv = document.querySelector(`.dotgrid[data-row="${newRow}"][data-col="${newCol}"]`);
+            const highlightDiv = document.createElement('div');
+            highlightDiv.className = 'highlight';
+            dotDiv.parentElement.insertBefore(highlightDiv, dotDiv);
+        }
+    });
+
+    // Highlight surrounding positions around the ball
+    const surroundingDirections = [
+        { row: 0, col: 1 },  // Right
+        { row: 1, col: 1 },  // Top Right
+        { row: -1, col: -1 }, // Bottom Left
+        { row: 1, col: -1 }, // Bottom Right
+        { row: 0, col: -1 }, // Left
+        { row: -1, col: 1 }, // Top Left
+        { row: 1, col: 0 },  // Down
+        { row: -1, col: 0 }  // Up
+    ];
+
+    surroundingDirections.forEach(direction => {
+        const adjRow = ballPosition.row + direction.row;
+        const adjCol = ballPosition.col + direction.col;
+        if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols) {
+            const adjDotDiv = document.querySelector(`.dotgrid[data-row="${adjRow}"][data-col="${adjCol}"]`);
+            const highlightDiv = document.createElement('div');
+            highlightDiv.className = 'highlight';
+            adjDotDiv.parentElement.insertBefore(highlightDiv, adjDotDiv);
+        }
+    });
 }
 
 function startGame() {
@@ -150,5 +211,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         .then(data => {
             document.getElementById('controls').innerHTML += data; // Append dice content instead of replacing
             document.getElementById('playGame').addEventListener('click', startGame); // Ensure event listener is added after loading dice.html
+            document.getElementById('dice').addEventListener('click', rollDice); // Add event listener for dice click
         });
 });

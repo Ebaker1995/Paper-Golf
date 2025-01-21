@@ -12,8 +12,12 @@ Paper-Golf is a simple JavaScript-based golf game that allows players to simulat
 ## To-Do/Ideas
 
 -Make a level editor/builder
+        Currently auto generating but need better conditions
 -Make dice rolling nice
+        swap to a library
 -Make ball skins
+-Add legend
+-Ball doesnt know which surface it is on.
 
 
 ## Installation

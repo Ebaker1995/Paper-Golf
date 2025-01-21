@@ -45,6 +45,7 @@ h1 {
     padding-bottom: 5px;
     height: calc(100% - 60px); /* Adjust height to fill the notebook container */
     width: calc(100% - 60px); /* Adjust width to fill the notebook container */
+    z-index: 2;
 }
 
 .row {
@@ -70,7 +71,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center the dots */
-    z-index: 1; /* Ensure dots are on top */
+    z-index: 2; /* Ensure dots are on top */
 }
 
 .ball {
@@ -308,4 +309,21 @@ h1 {
     border-radius: 50%;
     background-color: black;
     transform: translate(-50%, -50%);
+}
+
+.highlight {
+    width: 12px; /* Match the cell size */
+    height: 12px; /* Match the cell size */
+    border: 2px solid rgb(255, 255, 255); /* Blue ring */
+    border-radius: 50%;
+    background-color: transparent; /* Make the inside transparent */
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the dots */
+    z-index: 1; /* Ensure highlight is below dots */
+    pointer-events: none; /* Allow interactions with elements below */
 }
