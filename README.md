@@ -9,12 +9,19 @@ Paper-Golf is a simple JavaScript-based golf game that allows players to simulat
 - [Contributing](#contributing)
 - [License](#license)
 
+## To-Do/Ideas
+
+-Make a level editor/builder
+-Make dice rolling nice
+-Make ball skins
+
+
 ## Installation
 
 To get started with Paper-Golf, clone the repository and install the necessary dependencies:
 
 ```bash
-git clone https://github.com/yourusername/Paper-Golf.git
+git clone https://github.com/ebaker1995/Paper-Golf.git
 cd Paper-Golf
 npm install
 ```
