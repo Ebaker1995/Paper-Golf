@@ -1,5 +1,3 @@
-/* Paper-Golf/src/styles.css */
-
 body {
     display: flex;
     flex-direction: column;
@@ -49,18 +47,30 @@ h1 {
     width: calc(100% - 60px); /* Adjust width to fill the notebook container */
 }
 
-.dotgrid {
-    width: 4px;
-    height: 4px;
-    background-color: rgb(151, 151, 151);
-    border-radius: 50%;
-    display: inline-block;
-    margin: 10px;
-    position: relative;
-}
-
 .row {
     display: flex;
+}
+
+.cell {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    margin: 0; /* Remove margins to eliminate borders between squares */
+}
+
+.dotgrid {
+    width: 6px;
+    height: 6px;
+    background-color: rgb(151, 151, 151);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the dots */
+    z-index: 1; /* Ensure dots are on top */
 }
 
 .ball {
@@ -69,20 +79,43 @@ h1 {
     background-color: red;
     border-radius: 50%;
     position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .hole {
-    width: 8px;
-    height: 8px;
-    border: 8px solid black;
+    width: 16px;
+    height: 16px;
+    border: 2px solid black;
     border-radius: 50%;
     position: absolute;
-    align-items: center;
-    justify-content: center;
+    background-color: #000000; /* Black */
+}
+
+.fairway,
+.bunker,
+.rough,
+.green {
+    width: 20px;
+    height: 20px;
+    position: absolute;
     top: 0;
     left: 0;
+    z-index: 0; /* Ensure background is behind dots */
+}
+
+.fairway {
+    background-color: #90EE90; /* Light green */
+}
+
+.bunker {
+    background-color: #FFD700; /* Gold */
+}
+
+.rough {
+    background-color: #123d04; /* SaddleBrown */
+}
+
+.green {
+    background-color: #41d410; /* Green */
 }
 
 .controls {
@@ -98,34 +131,35 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#dice {
-    width: 90px;
-    height: 90px;
-    transform-style: preserve-3d;
-    transition: transform 1.5s ease-out;
+.legend {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#dice:hover {
-    cursor: pointer;
+.legend h2 {
+    margin: 0 0 10px 0;
 }
 
-.sides {
-    background-color: #EFE5DC;
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
-.dot {
-    display: block;
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: black;
-    transform: translate(-50%, -50%);
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    display: inline-block;
 }
 
 .side-1 .dot-1 { top: 50%; left: 50%; }
@@ -243,4 +277,35 @@ h1 {
         opacity: 1;
         bottom: 20px;
     }
+}
+
+#dice {
+    width: 90px;
+    height: 90px;
+    transform-style: preserve-3d;
+    transition: transform 1.5s ease-out;
+    position: relative; /* Ensure proper positioning */
+}
+
+#dice:hover {
+    cursor: pointer;
+}
+
+.sides {
+    background-color: #EFE5DC;
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+}
+
+.dot {
+    display: block;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: black;
+    transform: translate(-50%, -50%);
 }

@@ -6,18 +6,82 @@ let holePosition = { row: 25, col: 15 };
 
 function createGrid() {
     gridContainer.innerHTML = ''; // Clear existing grid
+    const surfaceTypes = ['fairway', 'bunker', 'rough'];
+    const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+
+    function placePatch(type, size) {
+        let startRow, startCol, isValid;
+        do {
+            startRow = Math.floor(Math.random() * (rows - size));
+            startCol = Math.floor(Math.random() * (cols - size));
+            isValid = true;
+            for (let i = startRow; i < startRow + size; i++) {
+                for (let j = startCol; j < startCol + size; j++) {
+                    if (type === 'green' && grid[i][j] === 'fairway') {
+                        isValid = false;
+                    }
+                    if (type === 'fairway' && grid[i][j] === 'green') {
+                        isValid = false;
+                    }
+                }
+            }
+        } while (!isValid);
+
+        for (let i = startRow; i < startRow + size; i++) {
+            for (let j = startCol; j < startCol + size; j++) {
+                grid[i][j] = type;
+            }
+        }
+    }
+
+    // Place fairway patches
+    placePatch('fairway', 2);
+    placePatch('fairway', 3);
+    placePatch('fairway', 5);
+    placePatch('fairway', 3);
+    placePatch('fairway', 8);
+
+    // Place bunker patches
+    placePatch('bunker', 3);
+
+    // Place rough patches
+    placePatch('rough', 4);
+    placePatch('rough', 4);
+
+    // Place green
+    placePatch('green', 6);
+
+    // Fill remaining cells with rough
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (!grid[i][j]) {
+                grid[i][j] = 'rough';
+            }
+        }
+    }
+
+    // Create grid elements
     for (let i = 0; i < rows; i++) {
         const rowDiv = document.createElement('div');
         rowDiv.className = 'row';
         for (let j = 0; j < cols; j++) {
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'cell';
+            const surfaceDiv = document.createElement('div');
+            surfaceDiv.className = grid[i][j];
+            surfaceDiv.classList.add('surface');
             const dotDiv = document.createElement('div');
             dotDiv.className = 'dotgrid';
             dotDiv.dataset.row = i;
             dotDiv.dataset.col = j;
-            rowDiv.appendChild(dotDiv);
+            cellDiv.appendChild(surfaceDiv);
+            cellDiv.appendChild(dotDiv);
+            rowDiv.appendChild(cellDiv);
         }
         gridContainer.appendChild(rowDiv);
     }
+    console.log({grid});
+    return grid;
 }
 
 function placeBall() {
@@ -56,9 +120,25 @@ function rollDice() {
 }
 
 function startGame() {
-    ballPosition = { row: 0, col: 0 };
-    holePosition = { row: 25, col: 15 };
-    
+    const grid = createGrid(); // Reset the grid
+
+    // Find a fairway position for the ball
+    let ballRow, ballCol;
+    do {
+        ballRow = Math.floor(Math.random() * rows);
+        ballCol = Math.floor(Math.random() * cols);
+    } while (grid[ballRow][ballCol] !== 'fairway');
+
+    // Find a green position for the hole that is at least 10 spaces away from the ball
+    let holeRow, holeCol;
+    do {
+        holeRow = Math.floor(Math.random() * rows);
+        holeCol = Math.floor(Math.random() * cols);
+    } while (grid[holeRow][holeCol] !== 'green' || Math.abs(holeRow - ballRow) + Math.abs(holeCol - ballCol) < 10);
+
+    ballPosition = { row: ballRow, col: ballCol };
+    holePosition = { row: holeRow, col: holeCol };
+
     placeBall();
     placeHole();
 }
@@ -72,4 +152,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
             document.getElementById('playGame').addEventListener('click', startGame); // Ensure event listener is added after loading dice.html
         });
 });
-createGrid();
