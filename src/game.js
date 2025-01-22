@@ -85,10 +85,12 @@ function createGrid() {
 }
 
 function placeBall() {
-    const ball = document.createElement('div');
-    ball.className = 'ball';
-    const initialDot = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`);
-    initialDot.appendChild(ball);
+    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`);
+    if (ballCell) {
+        const ballDiv = document.createElement('div');
+        ballDiv.className = 'ball';
+        ballCell.appendChild(ballDiv);
+    }
 }
 
 function placeHole() {
@@ -97,18 +99,6 @@ function placeHole() {
     const holeDot = document.querySelector(`.dotgrid[data-row="${holePosition.row}"][data-col="${holePosition.col}"]`);
     holeDot.appendChild(hole);
 }
-//Not working properly
-// function moveBall(steps) {
-//     const currentDot = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"] .ball`);
-//     if (currentDot) {
-//         currentDot.remove();
-//     }
-
-//     // Example movement logic: move right by steps
-//     ballPosition.col = (ballPosition.col + steps) % cols;
-
-//     placeBall();
-// }
 
 function rollDice() {
     
@@ -122,14 +112,20 @@ function rollDice() {
     console.log(result);
     
 }
+
 function highlightGridPositions(steps) {
     // Clear previous highlights
     document.querySelectorAll('.highlight').forEach(cell => cell.remove());
 
     // Check if the ball is in the fairway
-    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
+const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
+if (ballCell) {
+    console.log(`Ball cell found:`, ballCell);
     const isInFairway = ballCell.classList.contains('fairway');
     console.log(`Ball is in fairway: ${isInFairway}`);
+} else {
+    console.error(`Ball cell not found for position row: ${ballPosition.row}, col: ${ballPosition.col}`);
+}
 
     // Highlight new positions in a straight line
     const directions = [
@@ -152,6 +148,7 @@ function highlightGridPositions(steps) {
             const dotDiv = document.querySelector(`.dotgrid[data-row="${newRow}"][data-col="${newCol}"]`);
             const highlightDiv = document.createElement('div');
             highlightDiv.className = 'highlight';
+            highlightDiv.addEventListener('click', () => moveBallToPosition(newRow, newCol));
             dotDiv.parentElement.insertBefore(highlightDiv, dotDiv);
         }
     });
@@ -175,9 +172,29 @@ function highlightGridPositions(steps) {
             const adjDotDiv = document.querySelector(`.dotgrid[data-row="${adjRow}"][data-col="${adjCol}"]`);
             const highlightDiv = document.createElement('div');
             highlightDiv.className = 'highlight';
+            highlightDiv.addEventListener('click', () => moveBallToPosition(adjRow, adjCol));
             adjDotDiv.parentElement.insertBefore(highlightDiv, adjDotDiv);
+
+            
         }
     });
+}
+
+function moveBallToPosition(row, col) {
+    // Remove the ball from the current position
+    const currentBall = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"] .ball`);
+    if (currentBall) {
+        currentBall.remove();
+    }
+
+    // Update the ball position
+    ballPosition = { row, col };
+
+    // Place the ball at the new position
+    placeBall();
+
+    // Clear the highlights
+    document.querySelectorAll('.highlight').forEach(cell => cell.remove());
 }
 
 function startGame() {

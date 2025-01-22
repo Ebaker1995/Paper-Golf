@@ -25,7 +25,7 @@ body {
     border-radius: 10px;
     min-width: 300px;
     min-height: 50vh;
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     overflow: hidden; /* Ensure content stays inside */
 }
 
@@ -60,8 +60,8 @@ h1 {
 }
 
 .dotgrid {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
     background-color: rgb(151, 151, 151);
     border-radius: 50%;
     display: flex;
@@ -312,9 +312,9 @@ h1 {
 }
 
 .highlight {
-    width: 12px; /* Match the cell size */
-    height: 12px; /* Match the cell size */
-    border: 2px solid rgb(255, 255, 255); /* Blue ring */
+    width: 100%; /* Cover the entire cell */
+    height: 100%; /* Cover the entire cell */
+    border: 2px solid rgb(0, 217, 255); /* Blue ring */
     border-radius: 50%;
     background-color: transparent; /* Make the inside transparent */
     position: absolute;
@@ -325,5 +325,5 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%); /* Center the dots */
     z-index: 1; /* Ensure highlight is below dots */
-    pointer-events: none; /* Allow interactions with elements below */
+    pointer-events: auto; /* Allow interactions with elements below */
 }
