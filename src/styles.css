@@ -85,10 +85,12 @@ h1 {
 .hole {
     width: 16px;
     height: 16px;
-    border: 2px solid black;
+    border: 4px rgba(0, 0, 0, 0.993);
     border-radius: 50%;
     position: absolute;
-    background-color: #000000; /* Black */
+    background-color: #000000e5; /* Black */
+    z-index: 0; /* Ensure hole is behind ball */
+    pointer-events: none; 
 }
 
 .fairway,
@@ -312,8 +314,8 @@ h1 {
 }
 
 .highlight {
-    width: 100%; /* Cover the entire cell */
-    height: 100%; /* Cover the entire cell */
+    width: 80%; /* Cover the entire cell */
+    height: 80%; /* Cover the entire cell */
     border: 2px solid rgb(0, 217, 255); /* Blue ring */
     border-radius: 50%;
     background-color: transparent; /* Make the inside transparent */
@@ -326,4 +328,23 @@ h1 {
     transform: translate(-50%, -50%); /* Center the dots */
     z-index: 1; /* Ensure highlight is below dots */
     pointer-events: auto; /* Allow interactions with elements below */
+}
+
+.play-game-button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 15px 32px; /* Padding */
+    text-align: center; /* Centered text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Inline-block display */
+    font-size: 16px; /* Font size */
+    margin: 4px 2px; /* Margin */
+    cursor: pointer; /* Pointer cursor on hover */
+    border: none; /* Remove border */
+    border-radius: 12px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.play-game-button:hover {
+    background-color: #45a049; /* Darker green on hover */
 }

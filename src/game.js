@@ -118,21 +118,23 @@ function highlightGridPositions(steps) {
     document.querySelectorAll('.highlight').forEach(cell => cell.remove());
 
     // Check if the ball is in the fairway
-const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
-if (ballCell) {
-    console.log(`Ball cell found:`, ballCell);
+    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
     const isInFairway = ballCell.classList.contains('fairway');
     console.log(`Ball is in fairway: ${isInFairway}`);
-} else {
-    console.error(`Ball cell not found for position row: ${ballPosition.row}, col: ${ballPosition.col}`);
-}
 
     // Highlight new positions in a straight line
     const directions = [
         { row: 0, col: steps },  // Right
         { row: 0, col: -steps }, // Left
         { row: steps, col: 0 },  // Down
-        { row: -steps, col: 0 }  // Up
+        { row: -steps, col: 0 } , // Up
+        { row: -steps, col: steps },  // top right
+        { row: -steps, col: -steps } , // top left
+        { row: steps, col: -steps } , // bottom left
+        { row: steps, col: steps } , // bottom right
+
+
+
     ];
 
     directions.forEach(direction => {
@@ -175,7 +177,7 @@ if (ballCell) {
             highlightDiv.addEventListener('click', () => moveBallToPosition(adjRow, adjCol));
             adjDotDiv.parentElement.insertBefore(highlightDiv, adjDotDiv);
 
-            
+            console.log(`Highlighting ${adjRow}, ${adjCol}`);
         }
     });
 }
