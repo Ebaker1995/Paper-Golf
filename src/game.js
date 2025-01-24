@@ -87,7 +87,7 @@ function createGrid() {
         }
         gridContainer.appendChild(rowDiv);
     }
-    console.log({grid});
+    
     return grid;
 }
 
@@ -113,19 +113,26 @@ function rollDice() {
     const dice = document.getElementById('dice');
     let result = Math.floor(Math.random() * 6) + 1;
 
+    console.log(result);
+    dice.dataset.side = result;
+    dice.classList.toggle('reRoll');
+    
+
     // Adjust the roll based on the current surface
-    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
-    if (ballCell.classList.contains('fairway')) {
+    let ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`);
+    let surfaceCell = ballCell;
+    surfaceCell.parentElement.firstChild.classList.contains('fairway')
+
+    if (surfaceCell.parentElement.firstChild.classList.contains('fairway')) {
         result += 1;
-    } else if (ballCell.classList.contains('bunker')) {
+    } else if (surfaceCell.parentElement.firstChild.classList.contains('bunker')) {
         result -= 1;
     }
 
     // Ensure the result is within the valid range
-    result = Math.max(1, Math.min(result, 6));
+    result = Math.max(1, Math.min(result, 7));
 
-    dice.dataset.side = result;
-    dice.classList.toggle('reRoll');
+    
     
     highlightGridPositions(result);
     diceRolled = true; // Set the flag to indicate that the dice has been rolled
@@ -136,10 +143,7 @@ function highlightGridPositions(steps) {
     // Clear previous highlights
     document.querySelectorAll('.highlight').forEach(cell => cell.remove());
 
-    // Check if the ball is in the fairway
-    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
-    const isInFairway = ballCell.classList.contains('fairway');
-    console.log(`Ball is in fairway: ${isInFairway}`);
+   
 
     // Highlight new positions in a straight line
     const directions = [
@@ -156,11 +160,7 @@ function highlightGridPositions(steps) {
     directions.forEach(direction => {
         let newRow = ballPosition.row + direction.row;
         let newCol = ballPosition.col + direction.col;
-
-        if (isInFairway) {
-            newRow += Math.sign(direction.row);
-            newCol += Math.sign(direction.col);
-        }
+        
 
         if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
             const dotDiv = document.querySelector(`.dotgrid[data-row="${newRow}"][data-col="${newCol}"]`);
@@ -193,7 +193,7 @@ function highlightGridPositions(steps) {
             highlightDiv.addEventListener('click', () => moveBallToPosition(adjRow, adjCol));
             adjDotDiv.parentElement.insertBefore(highlightDiv, adjDotDiv);
 
-            console.log(`Highlighting ${adjRow}, ${adjCol}`);
+            
         }
     });
 }
@@ -295,9 +295,7 @@ function startGame() {
     placeHole();
 }
 
-function rulesButton() {
-    modal.style.display = "block";
-}
+
 
 // Modal functionality
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -320,6 +318,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Get the <span> element that closes the modal
     const span = document.getElementsByClassName("close")[0];
+
+    function rulesButton() {
+        modal.style.display = "block";
+    }
 
 
     // When the user clicks on <span> (x), close the modal
