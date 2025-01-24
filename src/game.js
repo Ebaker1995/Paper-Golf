@@ -1,11 +1,18 @@
 const rows = 26;
 const cols = 16;
 const gridContainer = document.getElementById('grid');
+const canvas = document.getElementById('linesCanvas');
+const ctx = canvas.getContext('2d');
 let ballPosition = { row: 0, col: 0 };
 let holePosition = { row: 25, col: 15 };
+let score = 0;
+let gameOver = false;
+let scoreHistory = [];
+let diceRolled = false;
 
 function createGrid() {
     gridContainer.innerHTML = ''; // Clear existing grid
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     const surfaceTypes = ['fairway', 'bunker', 'rough'];
     const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
 
@@ -101,16 +108,28 @@ function placeHole() {
 }
 
 function rollDice() {
-    
+    if (gameOver || diceRolled) return; // Prevent rolling the dice if the game is over or if the dice has already been rolled
+
     const dice = document.getElementById('dice');
-    const result = Math.floor(Math.random() * 6) + 1;
+    let result = Math.floor(Math.random() * 6) + 1;
+
+    // Adjust the roll based on the current surface
+    const ballCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`).parentElement;
+    if (ballCell.classList.contains('fairway')) {
+        result += 1;
+    } else if (ballCell.classList.contains('bunker')) {
+        result -= 1;
+    }
+
+    // Ensure the result is within the valid range
+    result = Math.max(1, Math.min(result, 6));
+
     dice.dataset.side = result;
     dice.classList.toggle('reRoll');
     
-    // moveBall(result);
     highlightGridPositions(result);
+    diceRolled = true; // Set the flag to indicate that the dice has been rolled
     console.log(result);
-    
 }
 
 function highlightGridPositions(steps) {
@@ -127,14 +146,11 @@ function highlightGridPositions(steps) {
         { row: 0, col: steps },  // Right
         { row: 0, col: -steps }, // Left
         { row: steps, col: 0 },  // Down
-        { row: -steps, col: 0 } , // Up
-        { row: -steps, col: steps },  // top right
-        { row: -steps, col: -steps } , // top left
-        { row: steps, col: -steps } , // bottom left
-        { row: steps, col: steps } , // bottom right
-
-
-
+        { row: -steps, col: 0 }, // Up
+        { row: -steps, col: steps },  // Top Right
+        { row: -steps, col: -steps }, // Top Left
+        { row: steps, col: -steps },  // Bottom Left
+        { row: steps, col: steps }  // Bottom Right
     ];
 
     directions.forEach(direction => {
@@ -183,6 +199,19 @@ function highlightGridPositions(steps) {
 }
 
 function moveBallToPosition(row, col) {
+    // Draw a line from the old position to the new position
+    const oldBallCell = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"]`);
+    const newBallCell = document.querySelector(`.dotgrid[data-row="${row}"][data-col="${col}"]`);
+    const oldRect = oldBallCell.getBoundingClientRect();
+    const newRect = newBallCell.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(oldRect.left + oldRect.width / 2 - canvasRect.left, oldRect.top + oldRect.height / 2 - canvasRect.top);
+    ctx.lineTo(newRect.left + newRect.width / 2 - canvasRect.left, newRect.top + newRect.height / 2 - canvasRect.top);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
     // Remove the ball from the current position
     const currentBall = document.querySelector(`.dotgrid[data-row="${ballPosition.row}"][data-col="${ballPosition.col}"] .ball`);
     if (currentBall) {
@@ -195,12 +224,55 @@ function moveBallToPosition(row, col) {
     // Place the ball at the new position
     placeBall();
 
+    // Increment the score
+    score++;
+    document.getElementById('score').textContent = `Score: ${score}`;
+
+    // Check if the ball is in the hole
+    if (ballPosition.row === holePosition.row && ballPosition.col === holePosition.col) {
+        gameOver = true;
+        
+        updateScorecard(score);
+    }
+
     // Clear the highlights
     document.querySelectorAll('.highlight').forEach(cell => cell.remove());
+
+    // Reset the dice rolled flag
+    diceRolled = false;
+}
+
+function updateScorecard(score) {
+    // Add the current score to the score history
+    scoreHistory.push(score);
+
+    // Keep only the last 9 scores
+    if (scoreHistory.length > 9) {
+        scoreHistory.shift();
+    }
+
+    // Update the scorecard display
+    const scoreList = document.getElementById('score-list');
+    scoreList.innerHTML = '';
+    scoreHistory.forEach((score, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `Hole ${index + 1}: ${score}`;
+        scoreList.appendChild(listItem);
+    });
 }
 
 function startGame() {
     const grid = createGrid(); // Reset the grid
+
+    // Reset the score
+    score = 0;
+    document.getElementById('score').textContent = `Score: ${score}`;
+
+    // Reset game over flag
+    gameOver = false;
+
+    // Reset dice rolled flag
+    diceRolled = false;
 
     // Find a fairway position for the ball
     let ballRow, ballCol;
@@ -223,6 +295,11 @@ function startGame() {
     placeHole();
 }
 
+function rulesButton() {
+    modal.style.display = "block";
+}
+
+// Modal functionality
 document.addEventListener('DOMContentLoaded', (event) => {
     // Load dice.html content into the controls container
     fetch('dice.html')
@@ -230,6 +307,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
         .then(data => {
             document.getElementById('controls').innerHTML += data; // Append dice content instead of replacing
             document.getElementById('playGame').addEventListener('click', startGame); // Ensure event listener is added after loading dice.html
-            document.getElementById('dice').addEventListener('click', rollDice); // Add event listener for dice click
+            document.getElementById('dice').addEventListener('click', rollDice); 
+            document.getElementById('rulesButton').addEventListener('click', rulesButton); 
+
         });
+
+    // Get the modal
+    const modal = document.getElementById("rulesModal");
+
+    // Get the button that opens the modal
+    const btn = document.getElementById("rulesButton");
+
+    // Get the <span> element that closes the modal
+    const span = document.getElementsByClassName("close")[0];
+
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 });

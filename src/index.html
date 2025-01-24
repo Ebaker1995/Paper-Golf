@@ -11,30 +11,33 @@
         <div class="notebook">
             <h1>Paper Golf</h1>
             <div id="grid"></div>
+            <canvas id="linesCanvas" width="800" height="600"></canvas>
         </div>
         <div class="controls" id="controls">
             <button id="playGame" class="play-game-button">Play Game</button>
+            <button id="rulesButton" class="rules-button">Rules</button>
+            <div id="score">Score: 0</div>
+            <div id="dice-container"></div>
+            <div id="scorecard">
+                <h2>Scorecard</h2>
+                <ul id="score-list"></ul>
+            </div>
         </div>
-        <!-- <div class="legend">
-            <h2>Legend</h2>
-            <div class="legend-item">
-                <div class="legend-color fairway"></div>
-                <span>Fairway</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color bunker"></div>
-                <span>Bunker</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color rough"></div>
-                <span>Rough</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color green"></div>
-                <span>Green</span>
-            </div>
-        </div> -->
     </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Game Rules</h2>
+            <p>1. Roll the dice to determine the number of spaces you can move.</p>
+            <p>2. Click on a highlighted position to move the ball.</p>
+            <p>3. The goal is to get the ball into the hole with the fewest moves.</p>
+            <p>4. If the ball is on the fairway, it will move one extra space in the direction you choose.</p>
+            <p>5. The game ends when the ball reaches the hole.</p>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>
